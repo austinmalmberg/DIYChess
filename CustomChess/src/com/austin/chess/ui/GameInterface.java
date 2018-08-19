@@ -39,7 +39,7 @@ public class GameInterface extends Application  {
 	
 	private void initObjects() {		
 		// load board
-		board = new ChessBoard(LogicBoardInitializer.CLASSICAL, Ruleset.CLASSICAL);
+		board = new ChessBoard(LogicBoardInitializer.CLASSIC_LAYOUT, Ruleset.CLASSICAL);
 	}
 	
 	public static void main(String[] args) {

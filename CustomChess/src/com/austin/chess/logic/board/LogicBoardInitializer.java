@@ -14,7 +14,7 @@ import com.austin.chess.logic.piece.Rook;
 
 public class LogicBoardInitializer {
 	
-	public static final int CLASSICAL = 0;
+	public static final int CLASSIC_LAYOUT = 0;
 	
 	private final String[] classic = {
 		"Rw Nw Bw Qw Kw Bw Nw Rw",
@@ -33,7 +33,8 @@ public class LogicBoardInitializer {
 	public LogicBoardInitializer(Board board, int state) {
 		this.board = board;
 		
-		if(state == CLASSICAL) load(classic);
+		if(state == CLASSIC_LAYOUT)
+			load(classic);
 	}
 	
 	public void load(String[] boardState) {

@@ -9,7 +9,8 @@ import com.austin.chess.logic.piece.Piece;
 import com.austin.chess.logic.piece.PieceColor;
 import com.austin.chess.logic.piece.PieceType;
 
-import javafx.scene.image.ImageView;
+import javafx.event.EventTarget;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
@@ -22,7 +23,9 @@ public class ChessBoard extends FlowPane {
 	
 	private Board board;
 	
-	private Map<PieceType, Map<PieceColor, ImageView>> pieceImageMap;
+	// there's an easier way to do these things
+	private Map<Node, Tile> pieceImageMap;
+	private Map<PieceType, Map<PieceColor, String>> pieceResourceMap;
 	
 	public static final Color[] TILE_COLORS = {Color.BLANCHEDALMOND, Color.GRAY}; 
 
@@ -33,94 +36,102 @@ public class ChessBoard extends FlowPane {
 		
 		board = new Board(boardstate, ruleset);
 		
-		initializePieceImageMap();
+		pieceImageMap = new HashMap<>();
 		
-		Piece[][] pieceArr = board.getBoard();
-		for(int r = 0; r < pieceArr.length; r++) {
-			for(int c = 0; c < pieceArr.length; c++) {
+		initializePieceResourceMap();
+		
+		for(int r = 0; r < ROWS; r++) {
+			for(int c = 0; c < COLUMNS; c++) {
 				Point location = new Point(ROWS-1 - r, c);
 				Tile t = new Tile(this, location, TILE_COLORS[(r+c) % 2]);
+				
 				getChildren().add(t);
 				
+				
+				
 				Piece piece = board.getPiece(location);
+				
 				if(piece != null) {
-					ImageView sprite = pieceImageMap.get(piece.type()).get(piece.color());
-					t.setPieceImage(sprite);
+					String imagePath = pieceResourceMap.get(piece.type()).get(piece.color());
+					t.setPieceImage(imagePath);
+					
+					pieceImageMap.put(t.getPieceImage(), t);
 				}
 			}
 		}
 		
-//		getChildren().add(new ImageView("file:ChessPiecesArray.png"));
-		
-		setOnMouseDragged(this::onMouseDragged);
-		setOnMouseClicked(this::onMouseClicked);
-		setOnMousePressed(this::onMousePressed);
-		setOnMouseReleased(this::onMouseReleased);
+		setOnMouseDragged(this::handleMouseDrag);
+		setOnMouseClicked(this::handleMouseClick);
+		setOnMousePressed(this::handleMousePress);
+		setOnMouseReleased(this::handleMouseRelease);
 	}
 	
 	// maybe create class to initialize images?
 	@SuppressWarnings("serial")
-	public void initializePieceImageMap() {
-		pieceImageMap = new HashMap<PieceType, Map<PieceColor, ImageView>>() {
+	public void initializePieceResourceMap() {
+		pieceResourceMap = new HashMap<PieceType, Map<PieceColor, String>>() {
 			{
-				put(PieceType.ROOK, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.ROOK, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_rlt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resources/Chess_rdt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_rlt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_rdt60.png");
 					}
 				});
 				
-				put(PieceType.KNIGHT, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.KNIGHT, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_nlt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resourcesChess_ndt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_nlt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_ndt60.png");
 					}
 				});
 				
-				put(PieceType.BISHOP, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.BISHOP, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_blt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resources/Chess_bdt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_blt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_bdt60.png");
 					}
 				});
 				
-				put(PieceType.QUEEN, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.QUEEN, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_qlt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resources/Chess_qdt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_qlt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_qdt60.png");
 					}
 				});
 				
-				put(PieceType.KING, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.KING, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_klt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resources/Chess_kdt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_klt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_kdt60.png");
 					}
 				});
 				
-				put(PieceType.PAWN, new HashMap<PieceColor, ImageView>() {
+				put(PieceType.PAWN, new HashMap<PieceColor, String>() {
 					{
-						put(PieceColor.WHITE, new ImageView("file:/resources/Chess_plt60.png"));
-						put(PieceColor.BLACK, new ImageView("file:/resources/Chess_pdt60.png"));
+						put(PieceColor.WHITE, "file:resources/Chess_plt60.png");
+						put(PieceColor.BLACK, "file:resources/Chess_pdt60.png");
 					}
 				});
 			}
 		};
 	}
 	
-	public void onMouseDragged(MouseEvent e) {
-
-	}
-	
-	public void onMouseClicked(MouseEvent e) {
+	public void handleMouseDrag(MouseEvent e) {
 		
 	}
 	
-	public void onMousePressed(MouseEvent e) {
-		
+	public void handleMouseClick(MouseEvent e) {
+		EventTarget target = e.getTarget();
+		// piece clicked
+		if(pieceImageMap.containsKey(target))
+			System.out.println(pieceImageMap.get(target).getPosition());		
 	}
 	
-	public void onMouseReleased(MouseEvent e) {
+	public void handleMousePress(MouseEvent e) {
+		// snap piece image to cursor
+	}
+	
+	public void handleMouseRelease(MouseEvent e) {
 		
 	}
 }
