@@ -15,8 +15,8 @@ public class Rook extends Piece {
 	
 	@Override
 	protected void updateAttackMoves() {		
-		attackMoves = new ArrayList<>(board.relatedPoints().getRank(location.x));
-		attackMoves.addAll(board.relatedPoints().getFile(location.y));
+		attackMoves = new ArrayList<>(board.getRelatedPoints().getRank(location.x));
+		attackMoves.addAll(board.getRelatedPoints().getFile(location.y));
 	}
 
 	@Override
@@ -25,22 +25,28 @@ public class Rook extends Piece {
 	@Override
 	public void updateValidMoves() {
 		
-		List<Point> rank = board.relatedPoints().getRank(location.x);
-		List<Point> file = board.relatedPoints().getFile(location.y);
+		List<Point> rank = board.getRelatedPoints().getRank(location.x);
+		List<Point> file = board.getRelatedPoints().getFile(location.y);
 		
-		validMoves = new ArrayList<>(board.getAttackMoves(color, rank.stream().filter(point -> point.y > location.y).collect(Collectors.toList())));	// horizontal moves right of rook
+		// horizontal moves right of rook
+		validMoves = new ArrayList<>(getValidLinearAttackingMoves(rank.stream()
+					.filter(point -> point.y > location.y)
+					.collect(Collectors.toList())));	
 		
-		validMoves.addAll(board.getAttackMoves(color,
-				reverse(rank).stream()
+		// horizontal moves left of rook
+		validMoves.addAll(getValidLinearAttackingMoves(reverse(rank).stream()
 					.filter(point -> point.y < location.y)
-					.collect(Collectors.toList())));	// horizontal moves left of rook
+					.collect(Collectors.toList())));	
 		
-		validMoves.addAll(board.getAttackMoves(color, file.stream().filter(point -> point.x > location.x).collect(Collectors.toList())));	// vertical moves above rook
+		// vertical moves above rook
+		validMoves.addAll(getValidLinearAttackingMoves(file.stream()
+					.filter(point -> point.x > location.x)
+					.collect(Collectors.toList())));	
 		
-		validMoves.addAll(board.getAttackMoves(color,
-				reverse(file).stream()
+		// vertical moves below rook
+		validMoves.addAll(getValidLinearAttackingMoves(reverse(file).stream()
 					.filter(point -> point.x < location.x)
-					.collect(Collectors.toList())));	// vertical moves below rook
+					.collect(Collectors.toList())));	
 	}
 	
 	@Override

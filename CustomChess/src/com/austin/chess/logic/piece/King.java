@@ -15,7 +15,7 @@ public class King extends Piece {
 	
 	@Override
 	protected void updateAttackMoves() {		
-		attackMoves = board.relatedPoints().getSurroundingPoints(MAX_TILES);
+		attackMoves = board.getRelatedPoints().getSurroundingPoints(MAX_TILES);
 	}
 
 	@Override

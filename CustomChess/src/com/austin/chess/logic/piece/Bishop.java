@@ -15,10 +15,10 @@ public class Bishop extends Piece {
 	
 	@Override
 	protected void updateAttackMoves() {
-		System.out.println(board.relatedPoints().getDiagonal(location));
+		System.out.println(board.getRelatedPoints().getDiagonal(location));
 		
-		attackMoves = new ArrayList<>(board.relatedPoints().getDiagonal(location));
-		attackMoves.addAll(board.relatedPoints().getInverseDiagonal(location));
+		attackMoves = new ArrayList<>(board.getRelatedPoints().getDiagonal(location));
+		attackMoves.addAll(board.getRelatedPoints().getInverseDiagonal(location));
 	}
 
 	@Override
@@ -27,24 +27,28 @@ public class Bishop extends Piece {
 	@Override
 	public void updateValidMoves() {
 
-		List<Point> direct = board.relatedPoints().getDiagonal(location);
-		List<Point> inverse = board.relatedPoints().getInverseDiagonal(location);
+		List<Point> direct = board.getRelatedPoints().getDiagonal(location);
+		List<Point> inverse = board.getRelatedPoints().getInverseDiagonal(location);
 		
-		validMoves = new ArrayList<>(board.getAttackMoves(color, direct.stream().filter(point -> point.y > location.y).collect(Collectors.toList())));	// up and right of bishop
+		// up and right of bishop
+		validMoves = new ArrayList<>(getValidLinearAttackingMoves(direct.stream()
+					.filter(point -> point.y > location.y)
+					.collect(Collectors.toList())));
 		
-		
-		validMoves.addAll(board.getAttackMoves(color,
-				reverse(direct).stream()
+		// points down and left of bishop
+		validMoves.addAll(getValidLinearAttackingMoves(reverse(direct).stream()
 					.filter(point -> point.y < location.y)
-					.collect(Collectors.toList())));	// down and left of bishop
+					.collect(Collectors.toList())));
 		
-		validMoves.addAll(board.getAttackMoves(color, inverse.stream().filter(point -> point.y > location.y).collect(Collectors.toList())));	// up and left of bishop
+		// points up and left of bishop
+		validMoves.addAll(getValidLinearAttackingMoves(inverse.stream()
+					.filter(point -> point.y > location.y)
+					.collect(Collectors.toList())));
 		
-		validMoves.addAll(board.getAttackMoves(color,
-				reverse(inverse).stream()
+		// points down and right of bishop
+		validMoves.addAll(getValidLinearAttackingMoves(reverse(inverse).stream()
 					.filter(point -> point.y < location.y)
-					.collect(Collectors.toList())));	// down and right of bishop
-		
+					.collect(Collectors.toList())));
 	}
 	
 	@Override

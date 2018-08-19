@@ -35,7 +35,7 @@ public class Knight extends Piece {
 	@Override
 	public void updateValidMoves() {
 		validMoves = attackMoves.stream()
-				.filter(point -> board.isNullorEnemyAtLocation(color, point))
+				.filter(point -> !board.isOccupied(point) || isEnemy(point))
 				.collect(Collectors.toList());
 	}
 	
