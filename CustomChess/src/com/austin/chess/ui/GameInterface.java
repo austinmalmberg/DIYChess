@@ -30,7 +30,7 @@ public class GameInterface extends Application  {
 	@Override
 	public void start(Stage stage) throws Exception {		
 		stage.setScene(new Scene(createContent()));
-		stage.setResizable(true);
+		stage.setResizable(false);
 		stage.sizeToScene();
 		stage.show();
 		
