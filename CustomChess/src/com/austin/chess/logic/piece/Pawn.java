@@ -20,7 +20,7 @@ public class Pawn extends Piece {
 	@Override
 	protected void updateAttackMoves() {
 		// forward one and to either side
-		attackMoves = board.getRelatedPoints().getSurroundingPoints(1).stream()
+		attackMoves = board.getRelatedPoints().getSurroundingPoints(location, 1).stream()
 				.filter(point -> point.x == location.x + 1*direction_mod && point.y != location.y)
 				.collect(Collectors.toList());
 	}

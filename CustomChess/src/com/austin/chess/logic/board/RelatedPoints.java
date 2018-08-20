@@ -58,12 +58,12 @@ public class RelatedPoints {
 				.flatMap(r -> IntStream.range(0, Board.COLUMNS).mapToObj(c -> new Point(r, c)).filter(board::inBounds));
 	}
 	
-	public List<Point> getSurroundingPoints(int max) {
+	public List<Point> getSurroundingPoints(Point location, int max) {
 		int min = -max;
 		
 		return IntStream.range(min, max+1).boxed()
 		.flatMap(r -> IntStream.range(min, max+1)
-				.mapToObj(c -> new Point(r, c)))
+				.mapToObj(c -> new Point(r+location.x, c+location.y)))
 				.filter(point -> board.inBounds(point) && (point.x != 0 || point.y != 0))
 		.collect(Collectors.toList()); 
 	}
@@ -94,8 +94,8 @@ public class RelatedPoints {
 	 * @param location
 	 * @return
 	 */
-	public List<Point> getInverseDiagonal(Point location) {
-		return inverseDiagonals.get(location.x-Board.ROWS-1 + location.y);
+	public List<Point> getInverseDiagonal(Point location) {		
+		return inverseDiagonals.get(location.x + location.y - (Board.ROWS - 1));
 	}
 	
 	

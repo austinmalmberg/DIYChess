@@ -15,7 +15,7 @@ public class King extends Piece {
 	
 	@Override
 	protected void updateAttackMoves() {		
-		attackMoves = board.getRelatedPoints().getSurroundingPoints(MAX_TILES);
+		attackMoves = board.getRelatedPoints().getSurroundingPoints(location, MAX_TILES);
 	}
 
 	@Override
@@ -23,7 +23,9 @@ public class King extends Piece {
 
 	@Override
 	public void updateValidMoves() {
-		validMoves = attackMoves.stream().filter(point -> !board.tileAttackedByEnemy(color, point)).collect(Collectors.toList());
+		validMoves = attackMoves.stream()
+				.filter(point -> !board.isOccupied(point) || isEnemy(point))
+				.collect(Collectors.toList());
 	}
 
 	@Override
