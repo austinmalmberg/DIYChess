@@ -40,7 +40,7 @@ public class Board {
 				.collect(Collectors.toList());
 		
 		// update initial moves
-//		pieces.stream().forEach(Piece::updateMoveset);
+		pieces.stream().forEach(Piece::updateMoveset);
 	}
 	
 	// METHODS FOR PIECES

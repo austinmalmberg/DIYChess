@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -15,7 +16,7 @@ public class RelatedPoints {
 	private final List<List<Point>> ranks;		// rows
 	private final List<List<Point>> files;		// files
 	
-	private final Map<Integer, List<Point>> diagonals;			// like /
+	private final Map<Integer, List<Point>> diagonals;
 	private final Map<Integer, List<Point>> inverseDiagonals;		// like \
 
 	public RelatedPoints(Board board) {		
@@ -37,6 +38,7 @@ public class RelatedPoints {
 						.collect(Collectors.toList()))
 				.collect(Collectors.toList());
 		
+		
 		diagonals = new HashMap<>();
 		inverseDiagonals = new HashMap<>();
 		
@@ -44,8 +46,8 @@ public class RelatedPoints {
 			diagonals.put(key, diagonalAsStream(new Point(key, 0)).collect(Collectors.toList()));
 			inverseDiagonals.put(key, inverseDiagonalAsStream(new Point(key, Board.COLUMNS-1)).collect(Collectors.toList()));
 			
-			if(key > 0) {
-				diagonals.put(-key, diagonalAsStream(new Point(Board.ROWS - key, Board.COLUMNS-1)).collect(Collectors.toList()));
+			if(key > 0) {				
+				diagonals.put(-key, diagonalAsStream(new Point(Board.ROWS - key, Board.COLUMNS)).collect(Collectors.toList()));
 				inverseDiagonals.put(-key, inverseDiagonalAsStream(new Point(Board.ROWS-1 - key, 0)).collect(Collectors.toList()));
 			}
 		}
@@ -74,14 +76,27 @@ public class RelatedPoints {
 		return files.get(c);
 	}
 	
+	/**
+	 * A map containing a list of points that make up each diagonal with the first point being the lower-left most point and the last point
+	 * being the upper right point (think of a forward slash). The longest diagonal, (0, 0) to (7, 7), has a key value of 0.  Diagonals
+	 * below this one are assigned negative integers while diagonals above it are assigned positive integers.
+ 	 * @param location
+	 * @return
+	 */
 	public List<Point> getDiagonal(Point location) {
 		return diagonals.get(location.x - location.y);
 	}
 	
+	/**
+	 * A map containing a list of points that make up each diagonal with the first point being the upper-left most point and the last point
+	 * being the lower-right most point (think of a backward slash). The longest diagonal, (0, 7) to (7, 0), has a key value of 0.  Diagonals
+	 * below this one are assigned negative integers while diagonals above it are assigned positive integers.
+	 * @param location
+	 * @return
+	 */
 	public List<Point> getInverseDiagonal(Point location) {
-		return inverseDiagonals.get(location.x-Board.ROWS - location.y);
+		return inverseDiagonals.get(location.x-Board.ROWS-1 + location.y);
 	}
-	
 	
 	
 	// PRIVATE METHODS
@@ -92,14 +107,10 @@ public class RelatedPoints {
 	}
 	
 	private Stream<Point> diagonalAsStream(Point location) {
-		int r = location.x;
-		int c = location.y;
-		return diagonalAsStream().map(point -> new Point(r + point.x - c, point.y)).filter(board::inBounds);
+		return diagonalAsStream().map(point -> new Point(location.x + point.x - location.y, point.y)).filter(board::inBounds);
 	}
 	
 	private Stream<Point> inverseDiagonalAsStream(Point location) {
-		int r = location.x;
-		int c = location.y;
-		return diagonalAsStream().map(point -> new Point(point.x, c - point.y + r)).filter(board::inBounds);
+		return diagonalAsStream().map(point -> new Point(point.x, location.y - point.y + location.x)).filter(board::inBounds);
 	}
 }

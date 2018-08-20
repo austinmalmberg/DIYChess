@@ -15,8 +15,6 @@ public class Bishop extends Piece {
 	
 	@Override
 	protected void updateAttackMoves() {
-		System.out.println(board.getRelatedPoints().getDiagonal(location));
-		
 		attackMoves = new ArrayList<>(board.getRelatedPoints().getDiagonal(location));
 		attackMoves.addAll(board.getRelatedPoints().getInverseDiagonal(location));
 	}
