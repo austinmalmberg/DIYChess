@@ -1,12 +1,14 @@
 package com.austin.chess.logic.board;
 
 import java.awt.Point;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.austin.chess.Ruleset;
 import com.austin.chess.logic.piece.Piece;
 import com.austin.chess.logic.piece.PieceColor;
+import com.austin.chess.logic.turn.TurnManager;
 
 public class Board {
 	
@@ -16,22 +18,28 @@ public class Board {
 	private LogicBoardInitializer initializer;
 	private Ruleset ruleset;
 	
-	private Piece[][] board;
-	private List<Piece> pieces;
+	private PieceColor[] players;
+	private TurnManager turn;
+	
+	private Graveyard graveyard;
 	
 	private RelatedPoints relatedPoints;
 	
-	private Graveyard graveyard;
+	private Piece[][] board;
+	private List<Piece> pieces;
 
 	public Board(int boardstate, int ruleset) {
-		this.ruleset = new Ruleset(ruleset);
 		this.initializer = new LogicBoardInitializer(this, boardstate);
+		this.ruleset = new Ruleset(ruleset);
 		
-		board = initializer.getBoard();
+		players = PieceColor.values();
+		turn = new TurnManager(players);
 		
 		relatedPoints = new RelatedPoints(this);
 		
 		graveyard = new Graveyard(PieceColor.values());
+		
+		board = initializer.getBoard();
 		
 		// init pieces list
 		pieces = relatedPoints.allPointsOnBoardAsStream()
@@ -41,12 +49,12 @@ public class Board {
 		
 		// update initial moves
 		pieces.stream().forEach(Piece::updateMoveset);
+		Arrays.stream(players).forEach(this::updateValidMoves);
 	}
 	
-	// METHODS FOR PIECES
 	
 	public boolean isOccupied(Point p) {
-		return board[p.x][p.y] == null;
+		return board[p.x][p.y] != null;
 	}
 	
 	public boolean inBounds(Point p) {
@@ -82,6 +90,10 @@ public class Board {
 		movingPiece.move(to);
 		
 		updateCapturedPiece(capturedPiece);
+		
+		// add move to log
+		
+		updateTurn();
 	}
 	
 	public void updateCapturedPiece(Piece piece) {
@@ -97,6 +109,12 @@ public class Board {
 				.forEach(Piece::updateValidMoves);
 	}
 	
+	public void updateTurn() {
+		turn.advanceTurn();
+		
+		
+	}
+	
 	// Getters -------------------------------------------------------------------------------------------------------
 
 	
@@ -109,7 +127,7 @@ public class Board {
 	
 	// Setters -------------------------------------------------------------------------------------------------------
 	
-	public void setPiece(Point location, Piece piece) {
+	private void setPiece(Point location, Piece piece) {
 		board[location.x][location.y] = piece;
 	}
 	
