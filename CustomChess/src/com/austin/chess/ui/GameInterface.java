@@ -2,7 +2,7 @@ package com.austin.chess.ui;
 
 import com.austin.chess.Ruleset;
 import com.austin.chess.logic.board.LogicBoardInitializer;
-import com.austin.chess.ui.board.ChessBoard;
+import com.austin.chess.ui.board.InteractiveChessBoard;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -15,7 +15,7 @@ public class GameInterface extends Application  {
 	
 	private FlowPane root;
 	
-	private ChessBoard board;
+	private InteractiveChessBoard board;
 	
 	public Parent createContent() {
 		initObjects();
@@ -39,7 +39,7 @@ public class GameInterface extends Application  {
 	
 	private void initObjects() {		
 		// load board
-		board = new ChessBoard(LogicBoardInitializer.CLASSIC_LAYOUT, Ruleset.CLASSICAL);
+		board = new InteractiveChessBoard(LogicBoardInitializer.CLASSIC_LAYOUT, Ruleset.CLASSICAL);
 	}
 	
 	public static void main(String[] args) {

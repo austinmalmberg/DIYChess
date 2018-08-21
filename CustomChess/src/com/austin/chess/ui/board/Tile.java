@@ -17,40 +17,51 @@ public class Tile extends StackPane {
 	private Color color;
 	
 	private Rectangle background;
-	private ImageView piece;
 	
-	public Tile(ChessBoard board, Point position, Color color) {
+	private PieceContainer pieceContainer;
+//	private ImageView piece;
+	
+	public Tile(InteractiveChessBoard board, Point position, Color color) {
 		this.position = position;
 		this.color = color;
 		
 		background = new Rectangle(WIDTH, HEIGHT);
-		background.setStroke(color);
 		background.setFill(color);
 		
-		piece = new ImageView();
+		pieceContainer = new PieceContainer();
+//		piece = new ImageView();
 		
 		getChildren().add(background);
-		getChildren().add(piece);
+//		getChildren().add(piece);
+		getChildren().add(pieceContainer);
 	}
 	
 	public void setHighlight(boolean highlight) {
 		background.setStroke(highlight ? Color.RED : color);
 	}
 	
-	public void setPiece(String imagePath) {
-		if(imagePath.isEmpty()) return;
-
-		piece.setImage(new Image(imagePath));
+	public void dimPiece(boolean b) {
+		pieceContainer.dimPiece(b);
 	}
 	
-	public void setPiece(ImageView piece) { this.piece = piece; }
+	public void setPieceImage(String path) {
+		pieceContainer.setImageFromPath(path);
+	}
+	
+	public void setPieceImage(Image img) {
+		pieceContainer.setImage(img);
+	}
+	
+	public void setPieceContainer(PieceContainer container) {
+		pieceContainer = container;
+	}
 	
 	public Point getPosition() { return position; }
-	public ImageView getPieceImage() { return piece; }
+	public PieceContainer getPieceContainer() { return pieceContainer; }
 	
-	public ImageView popPiece() {
-		ImageView temp = piece;
-		piece.setImage(null);
+	public PieceContainer swapPiece(PieceContainer newContainer) {
+		PieceContainer temp = pieceContainer;
+		pieceContainer = newContainer;
 		return temp;
 	}
 }
